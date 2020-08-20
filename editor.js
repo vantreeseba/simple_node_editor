@@ -52,7 +52,36 @@ class Editor {
     };
 
   }
+
   addNode(name) {
-    return new Node(name, { svg:this.svg, mouse: this.mouse });
+    var node = new Node(name, { svg:this.svg, mouse: this.mouse });
+    node.initUI();
+
+    return node;
+  }
+
+  fromJson(json) {
+    var nodes = json.nodes.map(node => {
+      var added = this.addNode(node.id);
+      if(node.position) {
+        added.moveTo(node.position);
+      }
+
+      return added;
+    });
+
+
+    json.edges.forEach(edge => {
+      var from = nodes.find(x => x.name === edge.from);
+      var to = nodes.find(x => x.name === edge.to);
+
+      if(from) {
+        var port = to.inputs.find(x => x.name == edge.id) || to.addInput(edge.id);
+        if(from) {
+          from.connectTo(port);
+        }
+      }
+    });
+
   }
 }

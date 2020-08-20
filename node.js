@@ -1,11 +1,12 @@
 class Node {
   constructor(name, { svg, mouse }) {
+    this.name = name;
     this.svg = svg;
     this.mouse = mouse;
     // DOM Element creation
     this.domElement = document.createElement('div');
     this.domElement.classList.add('node');
-    this.domElement.setAttribute('title', name);
+    this.domElement.setAttribute('title', this.name);
 
     // Create output visual
     var outDom = document.createElement('span');

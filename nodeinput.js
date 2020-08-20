@@ -53,7 +53,7 @@ class NodeInput {
   getAttachPoint() {
     var offset = GetFullOffset(this.domElement);
     return {
-      x: offset.left + this.domElement.offsetWidth - 2,
+      x: offset.left, // + this.domElement.offsetWidth - 2,
       y: offset.top + this.domElement.offsetHeight / 2
     };
   }

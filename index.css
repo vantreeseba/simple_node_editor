@@ -16,7 +16,7 @@ body{
   background-color: #4e4e4e;
   border-radius: .75em;
   display: inline-block;
-  padding:0.1em .3em .25em;
+  padding:0.1em .3em .5em;
   position:absolute;
 }
 .output,
@@ -38,19 +38,21 @@ body{
   border-color:red;
 }
 .output{
-  left: -.5em;
+  right: -.25em;
   top:1em;
   cursor: pointer;
 }
 .connection{
-  width:100%;
+  width:90%;
   position:relative;
-  padding-right:0.5em;
+  padding-left:0.5em;
   cursor:pointer;
+  /* border-top: thin solid black; */
+  border-bottom: thin solid gray;
 }
 .connection:after{
   content:"";
-  right:0em;
+  left:-0.5em;
   top:0.25em;
 }
 svg{
