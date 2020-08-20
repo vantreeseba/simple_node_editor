@@ -20,6 +20,20 @@ function GetFullOffset(element) {
     return offset;
   }
 }
+function createPath(a, b) {
+  var diff = {
+    x: b.x - a.x,
+    y: b.y - a.y
+  };
+
+  var pathStr = 'M' + a.x + ',' + a.y + ' ';
+  pathStr += 'C';
+  pathStr += a.x + diff.x / 3 * 2 + ',' + a.y + ' ';
+  pathStr += a.x + diff.x / 3 + ',' + b.y + ' ';
+  pathStr += b.x + ',' + b.y;
+
+  return pathStr;
+}
 
 
 /**

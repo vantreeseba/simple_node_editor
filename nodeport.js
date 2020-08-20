@@ -1,20 +1,20 @@
-class NodeInput {
+class NodePort {
   /**
    * Constructor.
-   *
-   * @param {string} name - The name of the input.
-   * @param {HTMLElement} svg - The svg element to draw this input into.
+   * @param {string} name - The name of the port.
+   * @param {HTMLElement} svg - The svg element to draw this port into.
    */
-  constructor(name, { svg, mouse }) {
+  constructor(name, type = 'input', { svg, mouse }) {
+    this.type = type;
     this.svg = svg;
     this.name = name;
     this.node = null;
 
     // The dom element, here is where we could add
-    // different input types
     this.domElement = document.createElement('div');
     this.domElement.innerHTML = name;
     this.domElement.classList.add('connection');
+    this.domElement.classList.add(this.type);
     this.domElement.classList.add('empty');
 
     // SVG Connector
@@ -26,18 +26,18 @@ class NodeInput {
 
     // DOM Event handlers
     this.domElement.onclick = (e) => {
-      if (mouse.currentInput) {
-        if (mouse.currentInput.path.hasAttribute('d')) {
-          mouse.currentInput.path.removeAttribute('d');
+      if (mouse.currentPort) {
+        if (mouse.currentPort.path.hasAttribute('d')) {
+          mouse.currentPort.path.removeAttribute('d');
         }
-        if (mouse.currentInput.node) {
-          mouse.currentInput.node.detachInput(mouse.currentInput);
-          mouse.currentInput.node = null;
+        if (mouse.currentPort.node) {
+          mouse.currentPort.node.detachInput(mouse.currentPort);
+          mouse.currentPort.node = null;
         }
       }
-      mouse.currentInput = this;
+      mouse.currentPort = this;
       if (this.node) {
-        this.node.detachInput(this);
+        this.node.detachPort(this);
         this.domElement.classList.remove('filled');
         this.domElement.classList.add('empty');
       }
@@ -52,10 +52,17 @@ class NodeInput {
    */
   getAttachPoint() {
     var offset = GetFullOffset(this.domElement);
-    return {
-      x: offset.left, // + this.domElement.offsetWidth - 2,
-      y: offset.top + this.domElement.offsetHeight / 2
-    };
+    if(this.type === 'input') {
+      return {
+        x: offset.left,
+        y: offset.top + this.domElement.offsetHeight / 2
+      };
+    } else {
+      return {
+        x: offset.left + this.domElement.offsetWidth - 2,
+        y: offset.top + this.domElement.offsetHeight / 2
+      };
+    }
   }
 }
 

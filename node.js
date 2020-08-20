@@ -3,58 +3,67 @@ class Node {
     this.name = name;
     this.svg = svg;
     this.mouse = mouse;
+
     // DOM Element creation
     this.domElement = document.createElement('div');
     this.domElement.classList.add('node');
     this.domElement.setAttribute('title', this.name);
 
+    this.portsContainer = document.createElement('div');
+    this.portsContainer.classList.add('container');
+
+    this.inputsDom = document.createElement('div');
+    this.inputsDom.classList.add('ports');
+    this.outputsDom = document.createElement('div');
+    this.outputsDom.classList.add('ports');
+
+    this.domElement.appendChild(this.portsContainer);
+    this.portsContainer.appendChild(this.inputsDom);
+    this.portsContainer.appendChild(this.outputsDom);
+
     // Create output visual
-    var outDom = document.createElement('span');
-    outDom.classList.add('output');
-    outDom.innerHTML = '&nbsp;';
-    this.domElement.appendChild(outDom);
+    // var outDom = document.createElement('span');
+    // outDom.classList.add('output');
+    // outDom.innerHTML = '&nbsp;';
+    // this.domElement.appendChild(outDom);
 
     // Output Click handler
-    outDom.onclick = (e) => {
-      if (mouse.currentInput &&
-        !this.ownsInput(mouse.currentInput)) {
-        var tmp = mouse.currentInput;
-        mouse.currentInput = null;
-        this.connectTo(tmp);
-      }
-      e.stopPropagation();
-    };
+    // outDom.onclick = (e) => {
+    //   if (mouse.currentPort &&
+    //     !this.ownsInput(mouse.currentPort)) {
+    //     var tmp = mouse.currentPort;
+    //     mouse.currentPort = null;
+    //     this.connectTo(tmp);
+    //   }
+    //   e.stopPropagation();
+    // };
 
     // Node Stuffs
     this.value = '';
-    this.inputs = [];
+    this.ports = [];
     this.connected = false;
 
     // SVG Connectors
     this.attachedPaths = [];
   }
 
-  getOutputPoint() {
-    var tmp = this.domElement.firstElementChild;
-    var offset = GetFullOffset(tmp);
-    return {
-      x: offset.left + tmp.offsetWidth / 2,
-      y: offset.top + tmp.offsetHeight / 2
-    };
+  addPort(name, type = 'input') {
+    var port = new NodePort(name, type, { svg:this.svg, mouse:this.mouse });
+    this.ports.push(port);
+    if(type == 'input') {
+      this.inputsDom.appendChild(port.domElement);
+    } else {
+      this.outputsDom.appendChild(port.domElement);
+    }
+    // this.domElement.appendChild(port.domElement);
+
+    return port;
   }
 
-  addInput(name) {
-    var input = new NodeInput(name, { svg:this.svg, mouse:this.mouse });
-    this.inputs.push(input);
-    this.domElement.appendChild(input.domElement);
-
-    return input;
-  }
-
-  detachInput(input) {
+  detachPort(port) {
     var index = -1;
     for (var i = 0; i < this.attachedPaths.length; i++) {
-      if (this.attachedPaths[i].input == input) {
+      if (this.attachedPaths[i].input === port) {
         index = i;
       }
     }
@@ -70,9 +79,9 @@ class Node {
     }
   }
 
-  ownsInput(input) {
-    for (var i = 0; i < this.inputs.length; i++) {
-      if (this.inputs[i] === input) {
+  ownsPort(port) {
+    for (var i = 0; i < this.ports.length; i++) {
+      if (this.port[i] === port) {
         return true;
       }
     }
@@ -80,39 +89,24 @@ class Node {
   }
 
   updatePosition() {
-    var outPoint = this.getOutputPoint();
+    // var outPoint = this.getOutputPoint();
 
     var aPaths = this.attachedPaths;
     for (var i = 0; i < aPaths.length; i++) {
       var iPoint = aPaths[i].input.getAttachPoint();
-      var pathStr = this.createPath(iPoint, outPoint);
-      aPaths[i].path.setAttributeNS(null, 'd', pathStr);
+      // var pathStr = createPath(iPoint, outPoint);
+      // aPaths[i].path.setAttributeNS(null, 'd', pathStr);
     }
 
-    for (var j = 0; j < this.inputs.length; j++) {
-      if (this.inputs[j].node !== null) {
-        var iP = this.inputs[j].getAttachPoint();
-        var oP = this.inputs[j].node.getOutputPoint();
+    for (var j = 0; j < this.ports.length; j++) {
+      if (this.ports[j].node !== null) {
+        var iP = this.ports[j].getAttachPoint();
+        // var oP = this.ports[j].node.getOutputPoint();
 
-        var pStr = this.createPath(iP, oP);
-        this.inputs[j].path.setAttributeNS(null, 'd', pStr);
+        // var pStr = createPath(iP, oP);
+        // this.ports[j].path.setAttributeNS(null, 'd', pStr);
       }
     }
-  }
-
-  createPath(a, b) {
-    var diff = {
-      x: b.x - a.x,
-      y: b.y - a.y
-    };
-
-    var pathStr = 'M' + a.x + ',' + a.y + ' ';
-    pathStr += 'C';
-    pathStr += a.x + diff.x / 3 * 2 + ',' + a.y + ' ';
-    pathStr += a.x + diff.x / 3 + ',' + b.y + ' ';
-    pathStr += b.x + ',' + b.y;
-
-    return pathStr;
   }
 
   connectTo(input) {
@@ -129,11 +123,11 @@ class Node {
     });
 
     var iPoint = input.getAttachPoint();
-    var oPoint = this.getOutputPoint();
+    // var oPoint = this.getOutputPoint();
 
-    var pathStr = this.createPath(iPoint, oPoint);
+    // var pathStr = createPath(iPoint, oPoint);
 
-    input.path.setAttributeNS(null, 'd', pathStr);
+    // input.path.setAttributeNS(null, 'd', pathStr);
   }
 
   moveTo(point) {

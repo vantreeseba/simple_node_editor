@@ -25,17 +25,17 @@ var json = {
       'to': 'n2'
     },
     {
-      'id': 'e1',
+      'id': 'e2',
       'from': 'n1',
       'to': 'n3'
     },
     {
-      'id': 'e1',
+      'id': 'this is a long name as a test',
       'from': 'n2',
       'to': 'n4'
     },
     {
-      'id': 'e1',
+      'id': 'e4',
       'from': 'n3',
       'to': 'n4'
     }

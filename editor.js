@@ -1,8 +1,6 @@
 
 class Editor {
-  constructor() {
-    // SVG SETUP
-    // ===========
+  _setupSVG() {
     this.svg = document.getElementById('svg');
     if (!this.svg) {
       this.svg = document.createElement('svg');
@@ -10,47 +8,37 @@ class Editor {
       document.body.appendChild(this.svg);
     }
     this.svg.ns = this.svg.namespaceURI;
+  }
 
-    // MOUSE SETUP
-    // =============
+  _setupMouseEvents() {
     this.mouse = {
-      currentInput: null,
-      createPath: (a, b) => {
-        var diff = {
-          x: b.x - a.x,
-          y: b.y - a.y
-        };
-
-        var pathStr = 'M' + a.x + ',' + a.y + ' ';
-        pathStr += 'C';
-        pathStr += a.x + diff.x / 3 * 2 + ',' + a.y + ' ';
-        pathStr += a.x + diff.x / 3 + ',' + b.y + ' ';
-        pathStr += b.x + ',' + b.y;
-
-        return pathStr;
-      }
+      currentPort: null
     };
 
     window.onmousemove = (e) => {
-      if (this.mouse.currentInput) {
-        var p = this.mouse.currentInput.path;
-        var iP = this.mouse.currentInput.getAttachPoint();
+      if (this.mouse.currentPort) {
+        var p = this.mouse.currentPort.path;
+        var iP = this.mouse.currentPort.getAttachPoint();
         var oP = { x: e.pageX, y: e.pageY };
-        var s = this.mouse.createPath(iP, oP);
+        var s = createPath(iP, oP);
         p.setAttributeNS(null, 'd', s);
       }
     };
 
     window.onclick = (e) => {
-      if (this.mouse.currentInput) {
-        this.mouse.currentInput.path.removeAttribute('d');
-        if (this.mouse.currentInput.node) {
-          this.mouse.currentInput.node.detachInput(this.mouse.currentInput);
+      if (this.mouse.currentPort) {
+        this.mouse.currentPort.path.removeAttribute('d');
+        if (this.mouse.currentPort.node) {
+          this.mouse.currentPort.node.detachPort(this.mouse.currentPort);
         }
-        this.mouse.currentInput = null;
+        this.mouse.currentPort = null;
       }
     };
+  }
 
+  constructor() {
+    this._setupSVG();
+    this._setupMouseEvents();
   }
 
   addNode(name) {
@@ -61,6 +49,7 @@ class Editor {
   }
 
   fromJson(json) {
+    // Build nodes.
     var nodes = json.nodes.map(node => {
       var added = this.addNode(node.id);
       if(node.position) {
@@ -70,15 +59,16 @@ class Editor {
       return added;
     });
 
-
+    // Build connections.
     json.edges.forEach(edge => {
       var from = nodes.find(x => x.name === edge.from);
       var to = nodes.find(x => x.name === edge.to);
 
       if(from) {
-        var port = to.inputs.find(x => x.name == edge.id) || to.addInput(edge.id);
+        var toport = to.ports.find(x => x.name === edge.id) || to.addPort(edge.id);
+        var fromport = from.ports.find(x => x.name === edge.id) || from.addPort(edge.id, 'output');
         if(from) {
-          from.connectTo(port);
+          from.connectTo(toport);
         }
       }
     });
