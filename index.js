@@ -3,11 +3,11 @@ var editor = new Editor();
 // DEMO
 // ========
 
-editor.fromJson(json);
+editor.fromJson(JSON.stringify(json));
 
 var copy = editor.toJson();
 
-console.log('copy', JSON.stringify(copy, null, 2));
+console.log('copy', copy);
 
 
 // Node 1

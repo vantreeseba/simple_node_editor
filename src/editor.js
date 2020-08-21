@@ -78,7 +78,9 @@ class Editor {
     return node;
   }
 
-  fromJson(json) {
+  fromJson(jsonString) {
+    var json = JSON.parse(jsonString);
+
     // Build nodes.
     var nodes = json.nodes.map(node => {
       var added = this.addNode(node.id);
@@ -104,7 +106,7 @@ class Editor {
   }
 
   toJson() {
-    return {
+    var json = {
       nodes: this.nodes.map(n => {
         return {
           id: n.name,
@@ -124,5 +126,7 @@ class Editor {
         });
       }).reduce((acc, cur) => acc.concat(cur.filter(x => x)), [])
     };
+
+    return JSON.stringify(json);
   }
 }
