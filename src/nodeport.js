@@ -4,10 +4,11 @@ class NodePort {
    * @param {string} name - The name of the port.
    * @param {HTMLElement} svg - The svg element to draw this port into.
    */
-  constructor(name, type = 'input', { svg, mouse }) {
+  constructor(name, type = 'input', node, { svg, mouse }) {
     this.type = type;
     this.svg = svg;
     this.name = name;
+    this.node = node;
     this.ports = [];
 
     // The dom element, here is where we could add

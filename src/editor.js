@@ -39,6 +39,7 @@ class Editor {
   constructor() {
     this._setupSVG();
     this._setupMouseEvents();
+    this.nodes = [];
     this.contextMenu = new ContextMenu();
     this.snapToGrid = false;
 
@@ -66,14 +67,15 @@ class Editor {
     });
 
 
-
     this.contextMenu.addItem('Toggle Snap', e => {
       this.snapToGrid = !this.snapToGrid;
     });
   }
 
   addNode(name) {
-    return new Node(name, { svg:this.svg, mouse: this.mouse });
+    var node = new Node(name, { svg:this.svg, mouse: this.mouse });
+    this.nodes.push(node);
+    return node;
   }
 
   fromJson(json) {
@@ -99,6 +101,28 @@ class Editor {
         toPort.updatePosition();
       }
     });
+  }
 
+  toJson() {
+    return {
+      nodes: this.nodes.map(n => {
+        return {
+          id: n.name,
+          position: n.getPosition()
+        };
+      }),
+      edges: this.nodes.map(n => {
+        var ins = n.ports.filter(p => p.type === 'input');
+        return ins.map(ip => {
+
+          // Inputs only have 1 port.
+          return {
+            id: ip.name,
+            from: ip.ports[0].node.name,
+            to: ip.node.name
+          };
+        });
+      }).reduce((acc, cur) => acc.concat(cur.filter(x => x)), [])
+    };
   }
 }

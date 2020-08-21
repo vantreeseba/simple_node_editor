@@ -30,7 +30,7 @@ class Node {
   }
 
   addPort(name, type = 'input') {
-    var port = new NodePort(name, type, { svg:this.svg, mouse:this.mouse });
+    var port = new NodePort(name, type, this, { svg:this.svg, mouse:this.mouse });
     this.ports.push(port);
 
     // UI
@@ -45,6 +45,13 @@ class Node {
 
   updatePosition() {
     this.ports.forEach(p => p.updatePosition());
+  }
+
+  getPosition() {
+    return {
+      x: parseFloat(this.domElement.style.left.replace('px', '')),
+      y: parseFloat(this.domElement.style.top.replace('px', ''))
+    };
   }
 
   moveTo(point) {

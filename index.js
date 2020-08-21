@@ -5,6 +5,10 @@ var editor = new Editor();
 
 editor.fromJson(json);
 
+var copy = editor.toJson();
+
+console.log('copy', JSON.stringify(copy, null, 2));
+
 
 // Node 1
 // var node = editor.addNode('Another One');
