@@ -40,8 +40,21 @@ class Editor {
     this._setupSVG();
     this._setupMouseEvents();
     this.nodes = [];
+    this.titlebar = new TitleBar();
     this.contextMenu = new ContextMenu();
     this.snapToGrid = false;
+
+    this.titlebar.addItem('save', (e) => {
+      var el = document.createElement('a');
+      const file = new Blob([this.toJson()],{
+        type: 'application/json'
+      });
+      el.href = URL.createObjectURL(file); 
+      el.download = `graph-editor.json`;
+      document.body.appendChild(el);
+      el.click();
+      document.body.removeChild(el);
+    });
 
     this.contextMenu.addItem('Add Node (1 in)', (e) => {
       var node = this.addNode('test');
