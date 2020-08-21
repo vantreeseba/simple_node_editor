@@ -36,24 +36,20 @@ class Editor {
     };
   }
 
-  constructor() {
+  _setupUI() {
     this._setupSVG();
     this._setupMouseEvents();
-    this.nodes = [];
     this.titlebar = new TitleBar();
     this.contextMenu = new ContextMenu();
-    this.snapToGrid = false;
 
     this.titlebar.addItem('save', (e) => {
-      var el = document.createElement('a');
-      const file = new Blob([this.toJson()],{
-        type: 'application/json'
+      Files.download('graph-editor.json', this.toJson());
+    });
+
+    this.titlebar.addItem('load', e => {
+      Files.upload(data => {
+        this.fromJson(data);
       });
-      el.href = URL.createObjectURL(file); 
-      el.download = `graph-editor.json`;
-      document.body.appendChild(el);
-      el.click();
-      document.body.removeChild(el);
     });
 
     this.contextMenu.addItem('Add Node (1 in)', (e) => {
@@ -83,6 +79,13 @@ class Editor {
     this.contextMenu.addItem('Toggle Snap', e => {
       this.snapToGrid = !this.snapToGrid;
     });
+
+  }
+
+  constructor() {
+    this.nodes = [];
+    this.snapToGrid = false;
+    this._setupUI();
   }
 
   addNode(name) {
@@ -91,9 +94,19 @@ class Editor {
     return node;
   }
 
-  fromJson(jsonString) {
-    var json = JSON.parse(jsonString);
+  clearUI() {
+    this.svg.innerHTML = '';
+    document.querySelectorAll('.node').forEach(n => {
+      document.body.removeChild(n);
+    });
 
+    this.nodes = [];
+  }
+
+  fromJson(jsonString) {
+    this.clearUI();
+
+    var json = JSON.parse(jsonString);
     // Build nodes.
     var nodes = json.nodes.map(node => {
       var added = this.addNode(node.id);
@@ -116,6 +129,7 @@ class Editor {
         toPort.updatePosition();
       }
     });
+
   }
 
   toJson() {
