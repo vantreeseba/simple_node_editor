@@ -1,21 +1,74 @@
+:root {
+  --highlight-bg-color: #8e8e8e;
+  --primary-bg-color: #6e6e6e;
+  --secondary-bg-color: #4e4e4e;
+  --tertiary-bg-color: #3e3e3e;
+}
+
 body{
-  background-color: #2e2e2e;
+  background-color: #2a2a2a;
   color: #d4d4d4;
   font-family: sans-serif;
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, var(--tertiary-bg-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--tertiary-bg-color) 1px, transparent 1px);
 }
+
+/* editor */ 
+svg{
+  position:absolute;
+  top:0px;
+  left:0px;
+  z-index:-100;
+  width:100%;
+  height:100%;
+}
+
+.contextmenu {
+  border-radius: .5em;
+  background-color: var(--primary-bg-color);
+  position:absolute;
+  display: flex;
+  flex-direction: column;
+  min-width: 70px;
+}
+.contextmenu::before{
+  content:attr(title) " ";
+}
+.contextmenu.hidden {
+  display: none;
+}
+.contextmenu .item, .contextmenu::before {
+  padding: .5em .75em;
+  flex:1;
+}
+.contextmenu::before {
+  border-bottom: thin solid #555;
+}
+.contextmenu .item:last-child{
+  border-bottom-left-radius: .5em;
+  border-bottom-right-radius: .5em;
+}
+.contextmenu .item:hover {
+  background-color: var(--highlight-bg-color);
+}
+
+/* Node */
+
 .node:before{
   content:attr(title) " ";
   display: flex; 
-  border-top-left-radius:.75em; 
-  border-top-right-radius:.75em; 
-  background-color:#6e6e6e; 
-  padding:0.1em .3em 0em; 
-  margin:-.1em -.3em 0.2em; 
+  border-top-left-radius:.5em; 
+  border-top-right-radius:.5em; 
+  background-color: var(--primary-bg-color);
+  padding:.3em .5em;
+  margin:-.3em .0em 0.2em;
 }
 .node{
-  background-color: #4e4e4e;
-  border-radius: .75em;
-  padding:0.1em .3em .5em;
+  background-color: var(--tertiary-bg-color);
+  border-radius: .5em;
+  padding:.3em .0em;
   position:absolute;
   display: flex;
   min-width: 100px;
@@ -23,7 +76,8 @@ body{
   flex-direction: column;
   justify-content: space-around;
 }
-.container{
+
+.portsContainer{
   display: flex;
   flex-direction: row;
   flex: 1;
@@ -33,13 +87,18 @@ body{
   flex-direction: column;
   flex: 1;
 }
+
+/* Connection */
 .connection:after{
   position:absolute;
   border:solid 1px #dedede;
-  background-color:#2e2e2e;
+  background-color: var(--secondary-bg-color);
   width:0.5em;
   height:0.5em;
   border-radius:0.5em;  
+
+  content:"";
+  margin-top: 0.4em;
 }
 .connection.filled:after{
   border:solid 1px transparent;
@@ -48,19 +107,16 @@ body{
 .connection:hover:after{
   border-color:red;
 }
-.connection.output{
-  right: -.25em;
-  cursor: pointer;
-}
 .connection{
+  padding: 0.1em 0em;
   flex: 0.5;
-}
-.connection:after{
-  content:"";
-  margin-top: 0.25em;
+  background-color: var(--secondary-bg-color);
+  margin-top: 0.3em;
+  border-radius: 0.2em;
 }
 .connection.input {
-  padding-left:0.25em;
+  padding-left:0.5em;
+  margin-right: 0.2em;
 }
 .connection.input:after{
   left:-0.25em;
@@ -68,15 +124,9 @@ body{
 .connection.output {
   padding-right:0.5em;
   text-align: right;
+  margin-left: 0.2em;
 }
 .connection.output:after{
   right:-0.25em;
 }
-svg{
-  position:absolute;
-  top:0px;
-  left:0px;
-  z-index:-100;
-  width:100%;
-  height:100%;
-}
+

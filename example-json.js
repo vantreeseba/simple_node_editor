@@ -6,15 +6,15 @@ var json = {
     },
     {
       'id': 'n2',
-      'position': { x: 200, y:100 }
+      'position': { x: 300, y:100 }
     },
     {
       'id': 'n3',
-      'position': { x: 200, y:200 }
+      'position': { x: 300, y:200 }
     },
     {
       'id': 'n4',
-      'position': { x: 300, y:150 }
+      'position': { x: 600, y:200 }
     }
 
   ],
