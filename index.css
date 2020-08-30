@@ -33,6 +33,7 @@ svg{
   display: flex;
   flex-direction: column;
   min-width: 70px;
+  z-index: 10;
 }
 .contextmenu::before{
   content:attr(title) " ";
@@ -109,6 +110,10 @@ svg{
   flex: 1;
   flex-direction: column;
   justify-content: space-around;
+}
+
+.node.selected {
+  border: thin solid blue;
 }
 
 .portsContainer{

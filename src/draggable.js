@@ -30,7 +30,23 @@ function createPath(b, a) {
   var halfx = a.x + (diff.x/2);
   var halfy = a.y + (diff.y/2);
 
+  var curve = 6;
+
   var pathStr = `M ${a.x} ${a.y}`;
+  // pathStr += `L ${a.x + 15} ${a.y + diff.y/8}`;
+  // pathStr += `L ${halfx} ${a.y + diff.y/6}`;
+  // pathStr += `L ${halfx} ${b.y - diff.y/6}`;
+  // pathStr += `L ${b.x - 15} ${b.y - diff.y/8}`;
+  //
+  // pathStr += `L ${halfx-diff.x/curve} ${a.y}`;
+  // pathStr += `Q ${halfx} ${a.y} ${halfx} ${a.y+diff.y/curve}`;
+  // pathStr += `L ${halfx} ${halfy+diff.y/curve}`;
+  // pathStr += `L ${halfx} ${halfy}`;
+  // pathStr += `L ${halfx} ${b.y-diff.y/curve}`;
+  // pathStr += `Q ${halfx} ${b.y} ${halfx + diff.x/curve} ${b.y}`;
+  // pathStr += `L ${b.x} ${b.y}`;
+
+
   // pathStr += `Q ${a.x + 30} ${a.y} ${Math.max(a.x + 10, a.x + diff.x/2)} ${a.y + diff.y/6}`;
   // pathStr += `T ${Math.min(b.x-20, b.x-diff.x/2)} ${b.y - diff.y/6}`;
   // pathStr += `T ${b.x} ${b.y}`;
@@ -52,6 +68,7 @@ function createPath(b, a) {
   // pathStr += `S ${b.x - 20} ${b.y} ${b.x - 20} ${b.y}`;
   // pathStr += `S ${b.x - 20} ${b.y} ${b.x - 20} ${b.y - (diff.y) /4}`;
 
+  // pathStr = `M ${a.x} ${a.y}`;
   pathStr += `C ${a.x + diff.x / 3 * 2} ${a.y} ${a.x + diff.x/3} ${b.y} ${b.x} ${b.y}`;
 
   return pathStr;

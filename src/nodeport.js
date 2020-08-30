@@ -4,7 +4,8 @@ class NodePort {
    * @param {string} name - The name of the port.
    * @param {HTMLElement} svg - The svg element to draw this port into.
    */
-  constructor(name, type = 'input', node, { svg, mouse }) {
+  constructor({ id, name, type = 'input' }, node, { svg, mouse }) {
+    this.id = id || Math.round(Math.random() * 1000000);
     this.type = type;
     this.svg = svg;
     this.name = name;
@@ -25,7 +26,7 @@ class NodePort {
     svg.appendChild(this.path);
 
     // DOM Event handlers
-    this.domElement.onclick = (e) => {
+    this.domElement.addEventListener('click', e => {
       if (mouse.currentPort) {
         if(mouse.currentPort.type !== this.type) {
           this.connect(mouse.currentPort);
@@ -33,12 +34,11 @@ class NodePort {
         }
       } else {
         if(this.type === 'input') {
-
           this.ports.forEach(p => p.disconnect(this));
         }
         mouse.currentPort = this;
       }
-    };
+    });
   }
 
   connect(port) {
@@ -123,5 +123,3 @@ class NodePort {
     }
   }
 }
-
-

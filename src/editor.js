@@ -12,7 +12,8 @@ class Editor {
 
   _setupMouseEvents() {
     this.mouse = {
-      currentPort: null
+      currentPort: null,
+      currentNode: null
     };
 
     window.onmousemove = (e) => {
@@ -33,7 +34,19 @@ class Editor {
         this.mouse.currentPort.path.removeAttribute('d');
         this.mouse.currentPort = null;
       }
+      if(this.mouse.currentNode && e.target !== this.mouse.currentNode.domElement) {
+        this.mouse.currentNode.domElement.classList.remove('selected');
+        this.mouse.currentNode = null;
+      }
     };
+
+    window.addEventListener('keydown', e => {
+      if(e.key === 'Delete') {
+        this.nodes = this.nodes.filter(n => n !== this.mouse.currentNode);
+        this.mouse.currentNode.delete();
+      }
+    });
+
   }
 
   _setupUI() {
@@ -53,28 +66,27 @@ class Editor {
     });
 
     this.contextMenu.addItem('Add Node (1 in)', (e) => {
-      var node = this.addNode('test');
+      var node = this.addNode({ name:'test' });
       node.moveTo({ x: e.clientX, y: e.clientY });
-      node.addPort('IN');
+      node.addPort({ name:'IN' });
     });
 
     this.contextMenu.addItem('Add Node (1 in 1 out)', (e) => {
-      var node = this.addNode('test');
+      var node = this.addNode({ name:'test' });
       node.moveTo({ x: e.clientX, y: e.clientY });
-      node.addPort('IN');
-      node.addPort('OUT', 'output');
+      node.addPort({ name:'IN' });
+      node.addPort({ name:'OUT', type:'output' });
     });
 
-    this.contextMenu.addItem('Add Node (1 in 1 out)', (e) => {
-      var node = this.addNode('test');
+    this.contextMenu.addItem('Add text adventure movement node', (e) => {
+      var node = this.addNode({ name:'Room' });
       node.moveTo({ x: e.clientX, y: e.clientY });
-      node.addPort('IN');
-      node.addPort('NORTH', 'output');
-      node.addPort('SOUTH', 'output');
-      node.addPort('EAST', 'output');
-      node.addPort('WEST', 'output');
+      node.addPort({ name:'IN' });
+      node.addPort({ name:'NORTH', type:'output' });
+      node.addPort({ name:'SOUTH', type:'output' });
+      node.addPort({ name:'EAST', type:'output' });
+      node.addPort({ name:'WEST', type:'output' });
     });
-
 
     this.contextMenu.addItem('Toggle Snap', e => {
       this.snapToGrid = !this.snapToGrid;
@@ -88,9 +100,15 @@ class Editor {
     this._setupUI();
   }
 
-  addNode(name) {
-    var node = new Node(name, { svg:this.svg, mouse: this.mouse });
+  addNode({ id, name }) {
+    var node = new Node({ id, name }, { svg:this.svg, mouse: this.mouse });
     this.nodes.push(node);
+
+    node.contextMenu = new ContextMenu({ element: node.domElement, title:'woo' });
+    node.contextMenu.addItem('delete', () => {
+      node.delete();
+    });
+
     return node;
   }
 
@@ -109,7 +127,7 @@ class Editor {
     var json = JSON.parse(jsonString);
     // Build nodes.
     var nodes = json.nodes.map(node => {
-      var added = this.addNode(node.id);
+      var added = this.addNode(node);
       if(node.position) {
         added.moveTo(node.position);
       }
@@ -119,12 +137,15 @@ class Editor {
 
     // Build connections.
     json.edges.forEach(edge => {
-      var from = nodes.find(x => x.name === edge.from);
-      var to = nodes.find(x => x.name === edge.to);
+      var from = nodes.find(x => x.id === edge.from);
+      var to = nodes.find(x => x.id === edge.to);
 
       if(from) {
-        var toPort = to.ports.find(x => x.name === edge.id) || to.addPort(edge.id);
-        var fromPort = from.ports.find(x => x.name === edge.id) || from.addPort(edge.id, 'output');
+        var toPort = to.ports.find(x => x.name === edge.toName) ||
+          to.addPort({ ...edge, name: edge.toName });
+        var fromPort = from.ports.find(x => x.name === edge.fromName) ||
+          from.addPort({ ...edge, name: edge.fromName, type: 'output' });
+
         toPort.connect(fromPort);
         toPort.updatePosition();
       }
@@ -136,7 +157,8 @@ class Editor {
     var json = {
       nodes: this.nodes.map(n => {
         return {
-          id: n.name,
+          id: n.id,
+          name: n.name,
           position: n.getPosition()
         };
       }),
@@ -146,9 +168,11 @@ class Editor {
 
           // Inputs only have 1 port.
           return {
-            id: ip.name,
-            from: ip.ports[0].node.name,
-            to: ip.node.name
+            id: ip.id,
+            from: ip.ports[0].node.id,
+            to: ip.node.id,
+            toName: ip.name,
+            fromName: ip.ports[0].name
           };
         });
       }).reduce((acc, cur) => acc.concat(cur.filter(x => x)), [])
