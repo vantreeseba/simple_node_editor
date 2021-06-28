@@ -22,6 +22,7 @@ function GetFullOffset(element) {
 }
 
 function createPath(b, a) {
+
   var diff = {
     x: b.x - a.x,
     y: b.y - a.y
@@ -31,7 +32,7 @@ function createPath(b, a) {
   var halfy = a.y + (diff.y/2);
 
   var curve = 6;
-
+  //
   var pathStr = `M ${a.x} ${a.y}`;
   // pathStr += `L ${a.x + 15} ${a.y + diff.y/8}`;
   // pathStr += `L ${halfx} ${a.y + diff.y/6}`;

@@ -3,25 +3,29 @@ var json = {
     {
       'id': 1,
       'name': 'n1',
-      'position': { x: 100, y:150 },
-      'data': { test :1, bar: 2 }
+      'position': { x: 100, y: 150
+      },
+      'data': { test : 1, bar: 2
+      }
     },
     {
       'id': 2,
       'name': 'n2',
-      'position': { x: 300, y:100 }
+      'position': { x: 300, y: 100
+      }
     },
     {
       'id': 3,
       'name': 'n3',
-      'position': { x: 300, y:250 }
+      'position': { x: 300, y: 250
+      }
     },
     {
       'id': 4,
       'name': 'n4',
-      'position': { x: 600, y:200 }
+      'position': { x: 600, y: 200
+      }
     }
-
   ],
   'edges': [
     {

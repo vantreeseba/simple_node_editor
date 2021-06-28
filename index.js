@@ -5,6 +5,8 @@ var editor = new Editor();
 
 editor.fromJson(JSON.stringify(json));
 
+textenginejson = new TextEngineJson(editor);
+
 var copy = editor.toJson();
 
 console.log('copy', copy);

@@ -1,5 +1,5 @@
 class Node {
-  constructor({ id, name }, { svg, mouse }) {
+  constructor({ id, name, data }, { svg, mouse }) {
     this.id = id || Math.round(Math.random() * 1000000);
     this.name = name;
     this.ports = [];
@@ -11,6 +11,11 @@ class Node {
     this.domElement = document.createElement('div');
     this.domElement.classList.add('node');
     this.domElement.setAttribute('title', this.name);
+
+    this.data = new NodeValue(data);
+
+    this.domElement.appendChild(this.data.domElement);
+
 
     this.portsContainer = document.createElement('div');
     this.portsContainer.classList.add('portsContainer');

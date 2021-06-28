@@ -98,10 +98,12 @@ class Editor {
     this.nodes = [];
     this.snapToGrid = false;
     this._setupUI();
+
+    this.jsonhandler = new JSONHandler();
   }
 
-  addNode({ id, name }) {
-    var node = new Node({ id, name }, { svg:this.svg, mouse: this.mouse });
+  addNode(nodeconfig) {
+    var node = new Node(nodeconfig, { svg:this.svg, mouse: this.mouse });
     this.nodes.push(node);
 
     node.contextMenu = new ContextMenu({ element: node.domElement, title:'woo' });
@@ -124,60 +126,10 @@ class Editor {
   fromJson(jsonString) {
     this.clearUI();
 
-    var json = JSON.parse(jsonString);
-    // Build nodes.
-    var nodes = json.nodes.map(node => {
-      var added = this.addNode(node);
-      if(node.position) {
-        added.moveTo(node.position);
-      }
-
-      return added;
-    });
-
-    // Build connections.
-    json.edges.forEach(edge => {
-      var from = nodes.find(x => x.id === edge.from);
-      var to = nodes.find(x => x.id === edge.to);
-
-      if(from) {
-        var toPort = to.ports.find(x => x.name === edge.toName) ||
-          to.addPort({ ...edge, name: edge.toName });
-        var fromPort = from.ports.find(x => x.name === edge.fromName) ||
-          from.addPort({ ...edge, name: edge.fromName, type: 'output' });
-
-        toPort.connect(fromPort);
-        toPort.updatePosition();
-      }
-    });
-
+    this.jsonhandler.fromJson(this, jsonString);
   }
 
   toJson() {
-    var json = {
-      nodes: this.nodes.map(n => {
-        return {
-          id: n.id,
-          name: n.name,
-          position: n.getPosition()
-        };
-      }),
-      edges: this.nodes.map(n => {
-        var ins = n.ports.filter(p => p.type === 'input');
-        return ins.map(ip => {
-
-          // Inputs only have 1 port.
-          return {
-            id: ip.id,
-            from: ip.ports[0].node.id,
-            to: ip.node.id,
-            toName: ip.name,
-            fromName: ip.ports[0].name
-          };
-        });
-      }).reduce((acc, cur) => acc.concat(cur.filter(x => x)), [])
-    };
-
-    return JSON.stringify(json);
+    return this.jsonhandler.toJson(this);
   }
 }
